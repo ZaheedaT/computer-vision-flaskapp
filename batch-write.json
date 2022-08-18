@@ -1,0 +1,41 @@
+{
+  "YourTestTable": [
+    {
+      "PutRequest": {
+        "Item":
+        {
+          "Artist": {
+            "S": "Bowie"
+          },
+          "SongTitle": {
+            "S": "Life on Mars"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Artist": {
+            "S": "Rolling Stones"
+          },
+          "SongTitle": {
+            "S": "Paint it Black"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item" : {
+          "Artist": {
+            "S": "The Doors"
+          },
+          "SongTitle": {
+            "S": "Light My Fire"
+          }
+        }
+      }
+    }
+  ]
+}

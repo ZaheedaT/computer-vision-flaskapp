@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+
+
+  </head>
+  <body>
+    <h1>Object Detection Application ~ Flask</h1>
+    <p>Detect object in video</p>
+
+<video src="{{ user_image }}" controls="controls"> </video>
+    <div>
+        {{jsonfile}}
+    </div>
+
+
+<br>
+    <br>
+  <form action="/detect_object" target="_blank">
+        <input type="submit" value="Detect Object" />
+    </form>
+    </body>
+</html>

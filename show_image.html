@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href='/templateFiles/main.css' />
+  </head>
+    <script>
+      var jsonfile ={{jsonfile}};
+    </script>
+  <body>
+    <h1>Object Detection Application ~ Flask</h1>
+    <p>Detect object in image</p>
+
+
+<img src="{{ user_image }}" alt="User Image" >
+    <div>
+        {{jsonfile}}
+    </div>
+
+
+<br>
+    <br>
+  <form action="/detect_object" target="_blank">
+        <input type="submit" value="Detect Object" />
+    </form>
+    </body>
+
+</html>
