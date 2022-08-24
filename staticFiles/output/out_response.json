@@ -1,1 +1,0 @@
-{"Bounding Box Coordinates": {"L": [[13, 3, 143, 142], [122, 88, 235, 208], [8, 133, 123, 242]]}, "Object Class": {"L": ["apple", "apple", "orange"]}, "Confidence": {"L": [0.9589297771453857, 0.9145920872688293, 0.6645320057868958]}, "Timestamp": {"S": "2022-08-19_01:14:52"}, "Image Metadata": {"M": {"width": {"N": 241}, "height": {"N": 250}}}}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import os
 import json
 import pandas as pd
@@ -6,15 +6,11 @@ import io
 import numpy as np
 import nest_asyncio
 from enum import Enum
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import StreamingResponse
-import uvicorn
-from flask import Flask, render_template, request, jsonify, session
-import os
-import json
-import pandas as pd
-
-from utils import detect_and_draw_box , store_result , detect_video
+from utils import detect_and_draw_box , store_result, add_data
+from flask_pymongo import PyMongo
+import pymongo
+from pymongo import MongoClient
+import db
 
 
 app = Flask(__name__,  template_folder='templateFiles', static_folder='staticFiles')
@@ -22,14 +18,9 @@ app = Flask(__name__,  template_folder='templateFiles', static_folder='staticFil
 UPLOAD_FOLDER = os.path.join('staticFiles', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'xyz'
-
-# List available models using Enum for convenience. This is useful when the options are pre-defined.
-class Model(str, Enum):
-    yolov3tiny = "yolov3-tiny"
-    yolov3 = "yolov3"
-
+app.config["MONGO_URI"] = "mongodb://localhost:27017/"
 os.path.dirname("../templateFiles")
-    
+
 @app.route('/')
 def main():
     return render_template("index.html")
@@ -41,6 +32,9 @@ def allowed_file(filename):
     if not fileExtension:
         raise HTTPException(status_code=415, detail="Unsupported file provided.")
 
+@app.route('/get-items')
+def get_items():
+    return jsonify(aws_controller.get_items())
 
 @app.route('/', methods=("POST", "GET"))
 def uploadFile():
@@ -52,7 +46,6 @@ def uploadFile():
         filename = _img.filename
         allowed_file(filename)
         _img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
         session['uploaded_img_file_path'] = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
         return render_template('success.html')
@@ -63,20 +56,21 @@ def displayImage():
     if img_file_path.split(".")[-1] in ("mp4", "mov"):
         return render_template('show_video.html', user_image=img_file_path)
     else:
-
         return render_template('show_image.html', user_image = img_file_path)
-
 
 
 @app.route('/detect_object')
 def detectObject():
-    uploaded_image_path = session.get('uploaded_img_file_path', None)
 
+    uploaded_image_path = session.get('uploaded_img_file_path', None)
     output_image_path, response, file_type = detect_and_draw_box(uploaded_image_path)
+
     if file_type == "image":
+
         return render_template('show_image.html', jsonfile= response, user_image=output_image_path[0])
     else:
-        return render_template('show_video.html',jsonfile= response, user_image=output_image_path[0])
+
+        return   render_template('show_video.html',jsonfile= response, user_image=output_image_path)
 
 
 

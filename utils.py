@@ -11,12 +11,23 @@ from cvlib.object_detection import draw_bbox
 from imageai.Detection import VideoObjectDetection
 import PIL.Image
 from PIL.ExifTags import TAGS
+import decimal
+import db
+import logging
+import pprint
 import boto3
+from botocore.exceptions import ClientError
+import tracker
+
+from flask_pymongo import PyMongo
+
+logger = logging.getLogger(__name__)
 #from pprint import pprint
 
-
+dyn_resource = boto3.resource('dynamodb')
 
 UPLOAD_FOLDER = os.path.join('staticFiles', 'uploads')
+OUTPUT_FOLDER = os.path.join('staticFiles', 'output')
 
 
 def store_result(path_name_ = "boxed_images"):
@@ -25,7 +36,7 @@ def store_result(path_name_ = "boxed_images"):
         
     return "Created Boxed Images Directory"
         
-def detect_and_draw_box( img_filepath, model="yolov3-tiny", confidence=0.2):
+def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
     """Detects common objects on an image and creates a new image with bounding boxes.
 
     Args:
@@ -44,6 +55,7 @@ def detect_and_draw_box( img_filepath, model="yolov3-tiny", confidence=0.2):
 
         # Perform the object detection
         bbox, label, conf = cv.detect_common_objects(img, confidence=confidence, model=model)
+
         print("This is the bbox, label, conf", bbox, label, conf)
         # Print current image's filename
         print(f"========================\nImage processed: {img_filepath}\n")
@@ -54,99 +66,55 @@ def detect_and_draw_box( img_filepath, model="yolov3-tiny", confidence=0.2):
 
         # Create a new image that includes the bounding boxes
         output_image = draw_bbox(img, bbox, label, conf)
-        # org
-
-        output_image_path = os.path.join(UPLOAD_FOLDER, 'output_image.jpg')
+        filename = img_filepath.split("/")[-1].split(".")[0]
+        output_image_path = os.path.join(OUTPUT_FOLDER, 'output_image_{name}.jpg'.format(name=filename))
         ls.append(output_image_path)
         # Save the image in the directory images_with_boxes
         cv2.imwrite(output_image_path, output_image)
-        # image = PIL.Image.open(img_filepath)
-        #
-        # # Get the exif data and map to the correct tags
-        # exif_data = {
-        #     PIL.ExifTags.TAGS[k]: v
-        #     for k, v in image._getexif().items()
-        #     if k in PIL.ExifTags.TAGS
-        # }
 
-        # Display the image with bounding boxes
-        #display(Image(f'images_with_boxes/{filename}')) # Use this display on the screen or as a saved picture
-        response['Bounding Box Coordinates'] = {"L": bbox}
-        response['Object Class'] = {"L" : label}
-        response['Confidence'] = {"L" : conf}
+        response['Bounding Box Coordinates'] = bbox
+        response['Object Class'] =  label
+        response['Confidence'] =  conf
         now = datetime.datetime.now()
         timestamp = str(now.strftime("%Y-%m-%d_%H:%M:%S"))
-        response['Timestamp'] = {"S": timestamp}
-        response['Image Metadata'] = {"M": {'width': {"N": img.shape[1]} , 'height': {"N": img.shape[0]} }}
+        response['Timestamp'] = timestamp
+        response['Image Metadata'] = {'width':  img.shape[1] , 'height':img.shape[0]}
         # responser = {
         #     "aizatron-app": [  {
-        #         "PutRequest":response}]  }
+        #       "PutRequest":response}]  }
 
+        #filename = img.file
+        filename = img_filepath.split("/")[-1].split(".")[0]
 
-
-
-        open("staticFiles/output/out_response.json", "w").write(json.dumps(response))
-
-        # jsonify(json.dump(response))
+        write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response )
+        add_data(response)
 
         return ls, response, 'image'
     return detect_video2(img_filepath)
 
-def to_dynamodb():
-    jsonDict = json.loads("staticFiles/output/out_response.json")
-    table = dynamodb.Table('aizatron-app1')
-    for item in jsonDict:
-        table.put_item(Item=item)
-
-def detect_video(video_filepath):
-    ls =[]
-    response = {}
-    execution_path = os.getcwd()
-
-    camera = cv2.VideoCapture(0)
-
-    detector = VideoObjectDetection()
-    detector.setModelTypeAsYOLOv3()
-    detector.setModelPath(os.path.join(execution_path, "yolo.h5"))
-    detector.loadModel()
-    video_path = detector.detectObjectsFromVideo(camera_input=camera,
-                                                 output_file_path=os.path.join(execution_path, "camera_detected_video")
-                                                 , frames_per_second=20,
-                                                 log_progress=True,
-                                                 return_detected_frame=True,
-                                                 minimum_percentage_probability=30)
-
-    bbox, label, conf = cv.detect_common_objects(frame, confidence=0.25, model="yolo.h5")
-
-    print(bbox, label, conf)
-    ls.append(video_path)
-    print("This is the video path", ls)
-    return ls, response
-# Read in image from POST request
-
 def detect_video2(video_filepath):
+    print("this is the video file pathh", video_filepath)
     response ={}
-    execution_path = os.getcwd()
+    filename = video_filepath.split("/")[-1].split(".")[0]
+    out_path = os.path.join(UPLOAD_FOLDER, "video_result_{name}".format(name=filename))
     cap = cv2.VideoCapture(video_filepath)
     # Define the codec and create VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(os.path.join(execution_path, "video_result"), fourcc, 15, (640, 480))
-    #count=0
+    out = cv2.VideoWriter(out_path, fourcc, 15, (640, 480))
+
     while cap.isOpened():
 
         ret, frame = cap.read()
-
-
-        #print(bbox, label, conf)
+        height, width, _ = frame.shape
         if not ret:
             print("Can't receive frame (stream end?). Exiting ...")
             break
+
         frame = cv2.flip(frame, 1)
-        # write the flipped frame
+        #cv2.rectangle(frame, (100, 100), (500, 500), (0, 255, 0), -1)
         out.write(frame)
         cv2.imshow('frame', frame)
         bbox, label, conf = cv.detect_common_objects(frame, confidence=0.50, model="yolo.h5")
-        open("out_response_video.json", "w").write(json.dumps(response))
         now = datetime.datetime.now()
         timestamp = str(now.strftime("%Y-%m-%d_%H:%M:%S"))
         response['Timestamp'] = timestamp
@@ -154,28 +122,39 @@ def detect_video2(video_filepath):
         response['Bounding Box Coordinates'] = bbox
         response['Confidence'] = conf
 
+
+
+        # Release everything if job is finished
+
+        #write_json("staticFiles/output/", "out_response_video_{name}.json".format(name=filename), data=response)
+
         if cv2.waitKey(1) == ord('q'):
             break
-    # Release everything if job is finished
-
+    filename = video_filepath.split("/")[-1].split(".")[0]
+    open("out_response_video_{name}.json".format(name=filename), "w").write(json.dumps(response))
+    add_data(response)
     cap.release()
     out.release()
     cv2.destroyAllWindows()
 
-    return [os.path.join(execution_path, "video_result")] , response,  'video'
 
 
+    return out_path , response,  'video'
+
+def add_data(response):
+    print("In the add data function")
+    db.db.collection.insert_one(response)
+
+def write_json(target_path, target_file, data):
+
+    print("in the write_json function")
+    with open(os.path.join(target_path, target_file), 'w') as f:
+        json.dump(data, f)
 
 
-
-def read_data(image_file_, dir_name_ = "uploaded_images"):
-    """"Will read in the uploaded imageand put  
-    results in the boxed_image directory"""
-    
-    if not os.path.exists(dir_name_): # Create Directory for the uploaded staticFiles
-        os.mkdir(dir_name_)
-    
-    detect_and_draw_box(image_file) # Create object Detection on image
-    
-    return render_template('show_image.html', user_image = dir_name_)
-
+def to_dynamodb():
+    print("In the to_dynamodb function")
+    jsonDict = json.loads("staticFiles/output/out_response.json")
+    table = dynamodb.Table('aizatron-app')
+    for item in jsonDict:
+        table.put_item(Item=item)
