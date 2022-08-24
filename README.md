@@ -101,7 +101,10 @@ The results of the image/video uploaded will be saved in Mongodb Atlas database 
 
 
 #### Mongodb Atlas
+Login to view database
 
-# The response JSONs may be voewed under
+### Improvements 
+Improvements I could make are App/Unit tests, and better documentation under function definitions. It was my first time using a NoSQL framework and I've managed to use learn and implement MongoDB. I had a good try at using AWS DynamoDB , with a bit more learning and time I can make that aspect work. 
+
 
 
