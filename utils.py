@@ -89,8 +89,8 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
         write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response )
         add_data(response)
 
-        return ls, response, 'image'
-    #return detect_video2(img_filepath)
+        return output_image_path, response, 'image'
+
 
 def detect_video2(video_filepath):
     print("this is the video file pathh", video_filepath)
@@ -141,7 +141,7 @@ def detect_video2(video_filepath):
     out.release()
     cv2.destroyAllWindows()
 
-    return out_path , response,  'video'
+    return video_filepath , response,  'video'
 
 def add_data(response):
     print("In the add data function")
