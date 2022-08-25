@@ -17,8 +17,7 @@ import logging
 import pprint
 import boto3
 from botocore.exceptions import ClientError
-import tracker
-
+from bson import json_util
 from flask_pymongo import PyMongo
 
 logger = logging.getLogger(__name__)
@@ -40,15 +39,16 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
     """Detects common objects on an image and creates a new image with bounding boxes.
 
     Args:
-        filename (str): Filename of the image.
+        img_filepath (str): Directory path for the uploaded image e.
         model (str): Either "yolov3" or "yolov3-tiny". Defaults to "yolov3-tiny".
         confidence (float, optional): Desired confidence level. Defaults to 0.5.
     """
     response = {}
     ls = []
-    count = 0
-    if img_filepath.split(".")[-1] in ("mp4", "mov"):
-        detect_video2(img_filepath)
+
+    if img_filepath.split(".")[-1] in ("mp4", "mov", "avi"):
+        print("File is a video")
+        return detect_video2(img_filepath)
     else:
         # Read the image into a numpy array
         img = cv2.imread(img_filepath)
@@ -81,30 +81,34 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
         response['Image Metadata'] = {'width':  img.shape[1] , 'height':img.shape[0]}
         # responser = {
         #     "aizatron-app": [  {
-        #       "PutRequest":response}]  }
+        #       "PutRequest":response}]  } # AWS DynamoDB
 
-        #filename = img.file
+
         filename = img_filepath.split("/")[-1].split(".")[0]
 
         write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response )
         add_data(response)
 
         return ls, response, 'image'
-    return detect_video2(img_filepath)
+    #return detect_video2(img_filepath)
 
 def detect_video2(video_filepath):
     print("this is the video file pathh", video_filepath)
     response ={}
     filename = video_filepath.split("/")[-1].split(".")[0]
     out_path = os.path.join(UPLOAD_FOLDER, "video_result_{name}".format(name=filename))
-    cap = cv2.VideoCapture(video_filepath)
+    cap = cv2.VideoCapture(video_filepath) #Creates a video capture object, which would help stream or display the video.
     # Define the codec and create VideoWriter object
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v') #Saves the output video to a directory.
     out = cv2.VideoWriter(out_path, fourcc, 15, (640, 480))
 
-    while cap.isOpened():
 
-        ret, frame = cap.read()
+    while cap.isOpened():
+        # vid_capture.read() methods returns a tuple, first element is a bool
+        22
+        # and the second is frame
+
+        ret, frame = cap.read() # if ret is True then there's a video frame to read
         height, width, _ = frame.shape
         if not ret:
             print("Can't receive frame (stream end?). Exiting ...")
@@ -112,42 +116,49 @@ def detect_video2(video_filepath):
 
         frame = cv2.flip(frame, 1)
         #cv2.rectangle(frame, (100, 100), (500, 500), (0, 255, 0), -1)
-        out.write(frame)
+        out.write(frame) ## Write the frame to the output files
         cv2.imshow('frame', frame)
         bbox, label, conf = cv.detect_common_objects(frame, confidence=0.50, model="yolo.h5")
         now = datetime.datetime.now()
         timestamp = str(now.strftime("%Y-%m-%d_%H:%M:%S"))
+        print("Adding data to JSON")
         response['Timestamp'] = timestamp
         response['Object Class'] = label
         response['Bounding Box Coordinates'] = bbox
         response['Confidence'] = conf
-
-
-
-        # Release everything if job is finished
-
-        #write_json("staticFiles/output/", "out_response_video_{name}.json".format(name=filename), data=response)
-
-        if cv2.waitKey(1) == ord('q'):
+        print("Done Adding data to json, about to add data to MongoDB")
+        k = cv2.waitKey(20)
+        if k == 113: # wait.key() how long to pause between video and monitor keyboard for user input.
+            # framsepress "q", 113ascii val for "q" to stop recording
             break
-    filename = video_filepath.split("/")[-1].split(".")[0]
-    open("out_response_video_{name}.json".format(name=filename), "w").write(json.dumps(response))
+        else:
+            break
     add_data(response)
-    cap.release()
+    filename = video_filepath.split("/")[-1].split(".")[0]
+    write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response)
+    cap.release() #Once the video stream is fully processed or the user prematurely exits the loop,
+    # you release the video-capture object (vid_capture) and close the window
     out.release()
     cv2.destroyAllWindows()
-
-
 
     return out_path , response,  'video'
 
 def add_data(response):
     print("In the add data function")
-    db.db.collection.insert_one(response)
+    rs = json.loads(json_util.dumps(response))
+    #js = jsonify(response)
+    db.db.collection.insert_one(rs)
+
+def allowed_file(filename):
+
+    fileExtension = filename.split(".")[-1] in ("jpg", "jpeg", "png", "webp", "mp4", "mov", "avi")
+
+    if not fileExtension:
+        raise HTTPException(status_code=415, detail="Unsupported file provided.")
 
 def write_json(target_path, target_file, data):
 
-    print("in the write_json function")
+    #print("in the write_json function")
     with open(os.path.join(target_path, target_file), 'w') as f:
         json.dump(data, f)
 
