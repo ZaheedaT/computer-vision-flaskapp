@@ -6,7 +6,7 @@ import io
 import numpy as np
 import nest_asyncio
 from enum import Enum
-from utils import detect_and_draw_box , store_result, add_data
+from utils import detect_and_draw_box , store_result, add_data, allowed_file
 from flask_pymongo import PyMongo
 import pymongo
 from pymongo import MongoClient
@@ -25,18 +25,13 @@ os.path.dirname("../templateFiles")
 def main():
     return render_template("index.html")
 
-def allowed_file(filename):
 
-    fileExtension = filename.split(".")[-1] in ("jpg", "jpeg", "png", "webp", "mp4", "mov", "avi")
-
-    if not fileExtension:
-        raise HTTPException(status_code=415, detail="Unsupported file provided.")
 
 @app.route('/get-items')
 def get_items():
     return jsonify(aws_controller.get_items())
 
-@app.route('/', methods=("POST", "GET"))
+@app.route('/', methods=["POST"])
 def uploadFile():
     if not os.path.exists(app.config['UPLOAD_FOLDER']): # Create Directory for the uploaded staticFiles
         os.mkdir(app.config['UPLOAD_FOLDER'])
@@ -67,7 +62,7 @@ def detectObject():
 
     if file_type == "image":
 
-        return render_template('show_image.html', jsonfile= response, user_image=output_image_path[0])
+        return render_template('show_image.html', jsonfile= response, user_image=output_image_path)
     else:
 
         return   render_template('show_video.html',jsonfile= response, user_image=output_image_path)
