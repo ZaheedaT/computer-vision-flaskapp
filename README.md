@@ -43,23 +43,6 @@ detection to it. The model will be deployed in a Flask Framework environment in 
 * boto3==1.24.57
 * pymongo==4.2.0
 
-Download yolo.h5
-
-https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/yolo.h5
-
-Tensorflow Installation 
-
-`python3 -m pip install tensorflow`
-
-AWS DynamoDB: Run AWS coomands from command line:
-```shell
-pip3 install awscli --upgrade
-aws configure
-```
-
-```shell
-AWS Access Key ID [None]: ***PASTE ACCESS KEY ID HERE*** AWS Secret Access Key [None]: ***PASTE SECRET ACCESS KEY HERE*** Default region name [None]: ***TYPE YOUR PREFERRED REGION*** Default output format [None]: json
-```
 
 #### App Installation
 1. Clone the repo:
@@ -78,6 +61,15 @@ sh setup.sh
 source aizatron_env/bin/activate
 ```
 5. Install dependencies
+
+Download yolo.h5
+
+`wget https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/yolo.h5`
+
+Tensorflow Installation 
+
+`python3 -m pip install tensorflow`
+
 ```shell
 pip3 install -r requirements.txt
 ```
