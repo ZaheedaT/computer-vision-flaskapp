@@ -6,10 +6,7 @@ import io
 import numpy as np
 import nest_asyncio
 from enum import Enum
-from utils import detect_and_draw_box , store_result, add_data, allowed_file
-from flask_pymongo import PyMongo
-import pymongo
-from pymongo import MongoClient
+from utils import detect_and_draw_box, add_data, allowed_file
 import db
 
 
