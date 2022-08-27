@@ -25,7 +25,7 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
         model (str): Either "yolov3" or "yolov3-tiny". Defaults to "yolov3-tiny".
         confidence (float, optional): Desired confidence level. Defaults to 0.5.
     """
-    response = {}
+
 
     if img_filepath.split(".")[-1] in ("mp4", "mov", "avi"):
         print("File is a video")
@@ -49,11 +49,11 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
         response = write_response(bbox, label, conf, width = img.shape[1], height= img.shape[0])
         write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response ) # Sanity Check to Save the response as a JSON locally
         add_data(response) # Add the response JSON to mongodb table
-
-        return output_image_path, response, 'image'
+        filetype = 'image'
+        return output_image_path, response, filetype
 
 def write_response(bbox, label, conf,width, height):
-    response={}
+    response= dict()
     response['Bounding Box Coordinates'] = bbox
     response['Object Class'] = label
     response['Confidence'] = conf
@@ -65,8 +65,20 @@ def write_response(bbox, label, conf,width, height):
     return response
 
 def detect_video2(video_filepath):
-    print("this is the video file path", video_filepath)
+    """
+    A function that performs Object Detection on an uploaded video.
+    It adds the Boundary Boxes as well as a label to the video as it streams.
 
+    Parameters:
+        video_filepath (str): The path of the video uploaded by the user.
+    Returns:
+            response (dict): A dictionary containing response data from the model's result.
+            filetype (str): A string stating that the filetype is a video.
+    """
+
+    print("\nPerforming Video Object Detection...")
+
+    filetype= 'video'
     filename = video_filepath.split("/")[-1].split(".")[0]
     out_path = os.path.join(OUTPUT_FOLDER, "video_result_{name}".format(name=filename))
     cap = cv2.VideoCapture(video_filepath) #Creates a video capture object, which would help stream or display the video.
@@ -74,7 +86,9 @@ def detect_video2(video_filepath):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     size = (width, height)
     fourcc = cv2.VideoWriter_fourcc(*'MJPG') #Saves the output video to a directory.
-    out = cv2.VideoWriter(out_path, fourcc, 10, size)
+    out = cv2.VideoWriter(out_path, fourcc, 5, size)
+
+    response =dict()
     ls=[]
     while cap.isOpened():
 
@@ -92,7 +106,7 @@ def detect_video2(video_filepath):
 
         print("Streaming...")
         cv2.imshow('frame', output_frame)
-        response = write_response(bbox, label, conf, width, height)
+        response['response'] = (write_response(bbox, label, conf, width, height))
         k = cv2.waitKey(20)
         if k == 113: # wait.key() how long to pause between video and monitor keyboard for user input.
             # framsepress "q", 113ascii val for "q" to stop recording
@@ -100,35 +114,51 @@ def detect_video2(video_filepath):
     #add_data(response)
     write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response)
     cap.release() #Once the video stream is fully processed or the user prematurely exits the loop,
-    # you release the video-capture object (vid_capture) and close the window
-    out.release()
+    out.release()   #You release the video-capture object (vid_capture) and close the window
     cv2.destroyAllWindows()
 
-    return ls[0], response,  'video'
+    return video_filepath, response['response'],  filetype
 
 def add_data(response):
-    print("In the add data function")
+    """
+    A function that adds data into MongoDB Atlas (NoSQL).
+    It takes a python dict and converts it into JSON format first.
+
+    Parameters:
+     response (dict): A JSON-like object that has response data from our model
+    """
+
+    print("\nAdding data to MongoDB Atlas...")
     rs = json.loads(json_util.dumps(response))
-    #js = jsonify(response)
     db.db.collection.insert_one(rs)
 
 def allowed_file(filename):
+    """
+    A function that checks whether the uploaded filetype is allowed
+    using its extension.
 
-    fileExtension = filename.split(".")[-1] in ("jpg", "jpeg", "png", "webp", "mp4", "mov", "avi")
+    Supported file types: "jpg", "jpeg", "png", "webp", "mp4", "mov", "avi".
 
-    if not fileExtension:
+    Parameters:
+        filename (str): The name of the uploaded file, including its extension.
+    Raises:
+        An exception if the filetype is not allowed.
+    """
+
+    file_extension = filename.split(".")[-1] in ("jpg", "jpeg", "png", "webp", "mp4", "mov", "avi")
+
+    if not file_extension:
         raise HTTPException(status_code=415, detail="Unsupported file provided.")
 
 def write_json(target_path, target_file, data):
 
-    #print("in the write_json function")
     with open(os.path.join(target_path, target_file), 'w') as f:
         json.dump(data, f)
 
 
 def to_dynamodb():
     print("In the to_dynamodb function")
-    jsonDict = json.loads("staticFiles/output/out_response.json")
+    json_dict = json.loads("staticFiles/output/out_response.json")
     table = dynamodb.Table('aizatron-app')
-    for item in jsonDict:
+    for item in json_dict:
         table.put_item(Item=item)

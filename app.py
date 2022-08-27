@@ -23,11 +23,6 @@ def main():
     return render_template("index.html")
 
 
-
-@app.route('/get-items')
-def get_items():
-    return jsonify(aws_controller.get_items())
-
 @app.route('/', methods=["POST"])
 def uploadFile():
     if not os.path.exists(app.config['UPLOAD_FOLDER']): # Create Directory for the uploaded staticFiles
@@ -61,10 +56,14 @@ def detectObject():
 
         return render_template('show_image.html', jsonfile= response, user_image=output_image_path)
     else:
+        #result ="Video Object Detection Results:"
+        #print(result)
 
-        return   render_template('show_video.html',jsonfile= response, user_image=output_image_path)
+        return render_template('show_video.html',jsonfile= response, user_image= output_image_path)
 
-
+#@app.route('/get-items')
+# def get_items():
+#     return jsonify(aws_controller.get_items())
 
 if __name__ == '__main__':
     app.run(debug=True)
