@@ -35,12 +35,11 @@ detection to it. The model will be deployed in a Flask Framework environment in 
 #### Prerequisites
 * Flask==2.1.0
 * pandas==1.4.0
+* numpy==1.23.2
 * Jinja2==3.1.2
 * opencv-python==4.6.0.66
 * nest-asyncio==1.5.5
-* tensorflow==2.9.1
 * imageai==2.1.6
-* boto3==1.24.57
 * pymongo==4.2.0
 
 
