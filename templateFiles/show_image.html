@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href='/templateFiles/main.css' />
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+ <link rel="stylesheet" href='main.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -12,6 +12,11 @@
     <script>
       var jsonfile ={{jsonfile}};
     </script>
+    <style>
+      .img-container {
+        text-align: center;
+      }
+    </style>
   <body>
      <section>
         <div class="container p-20">
@@ -22,20 +27,21 @@
 
                         <div id="success_alert" class="alert alert-success" role="alert" style="display:none;"></div>
 
+<div  class="img-container" >
+    <h3  >Object Detection Application</h3>
+    <p  >Detect object in image</p>
 
-    <h3>Object Detection Application</h3>
-    <p>Detect object in image</p>
+<img src="{{ user_image }}" alt="User Image"   width="500" height="600">
 
-<img src="{{ user_image }}" alt="User Image" width="500" height="600">
-    <div>
+  <!--  <div>
         {{jsonfile}}
+    </div> -->
     </div>
-<br>
-    <br>
+
   <form action="/detect_object" target="_blank">
-        <!-- <input type="submit" value="Detect Object" /> -->
-      <button type="submit"  style="width:200px" formaction="/detect_object"
-              class="btn btn-primary btn-block rounded-pill shadow"> Detect Object</button>
+       <button type="submit" style="width:200px"
+               class="btn btn-primary btn-block rounded-pill shadow"> Detect Object</button>
+    </form>
 
 
                   </div>

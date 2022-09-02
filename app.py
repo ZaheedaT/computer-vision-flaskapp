@@ -7,15 +7,19 @@ import numpy as np
 import nest_asyncio
 from enum import Enum
 from utils import detect_and_draw_box, add_data, allowed_file
-import db
+
 
 
 app = Flask(__name__,  template_folder='templateFiles', static_folder='staticFiles')
 
+# Set Environment Variables
 UPLOAD_FOLDER = os.path.join('staticFiles', 'uploads')
+OUTPUT_FOLDER = os.path.join('staticFiles', 'output')
+#The config is actually a subclass of a dictionary and can be modified just like any dictionary
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'xyz'
-app.config["MONGO_URI"] = "mongodb://localhost:27017/"
+#app.config["MONGO_URI"] = "mongodb://localhost:27017/"
 os.path.dirname("../templateFiles")
 
 @app.route('/')
@@ -56,16 +60,14 @@ def detectObject():
 
         return render_template('show_image.html', jsonfile= response, user_image=output_image_path)
     else:
-        #result ="Video Object Detection Results:"
-        #print(result)
+        return render_template('show_video.html', jsonfile= response, user_image= output_image_path)
 
-        return render_template('show_video.html',jsonfile= response, user_image= output_image_path)
-
-#@app.route('/get-items')
+# @app.route('/get-items')
+#
 # def get_items():
 #     return jsonify(aws_controller.get_items())
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0')
     
     

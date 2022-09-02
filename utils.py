@@ -1,37 +1,43 @@
 import datetime
 import os
 import json
-from flask import jsonify
 import numpy as np
 import cv2
-import tensorflow as tf
 import cvlib as cv
 from cvlib.object_detection import draw_bbox
 from imageai.Detection import VideoObjectDetection
-import db
 from bson import json_util
 from flask_pymongo import PyMongo
+from flask import current_app as app
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import tensorflow as tf
 
 
 UPLOAD_FOLDER = os.path.join('staticFiles', 'uploads')
 OUTPUT_FOLDER = os.path.join('staticFiles', 'output')
 
 
-def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
-    """Detects common objects on an image and creates a new image with bounding boxes.
 
-    Args:
+def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
+    """Detects common objects on an image and creates a new image with bounding boxes and a Class Label.
+
+    Parameters:
         img_filepath (str): Directory path for the uploaded image e.
         model (str): Either "yolov3" or "yolov3-tiny". Defaults to "yolov3-tiny".
         confidence (float, optional): Desired confidence level. Defaults to 0.5.
+    Returns:
+        output_image_path (str):
+        response (dict): A dictionary containing response data from the model's results.
+        filetype (str): A string stating that the filetype is a video.
+
     """
 
-
     if img_filepath.split(".")[-1] in ("mp4", "mov", "avi"):
-        print("File is a video")
-        return detect_video2(img_filepath)
+        print("\nFile is a video")
+        return detect_video(img_filepath)
     else:
-
+        print("\nFile is an image")
         img = cv2.imread(img_filepath) # Read the image into a numpy array
         bbox, label, conf = cv.detect_common_objects(img, confidence=confidence, model=model) # Perform the object detection
 
@@ -48,26 +54,13 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
 
         response = write_response(bbox, label, conf, width = img.shape[1], height= img.shape[0])
         write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response ) # Sanity Check to Save the response as a JSON locally
-        add_data(response) # Add the response JSON to mongodb table
+        #add_data(response) # Add the response JSON to mongodb table
         filetype = 'image'
         return output_image_path, response, filetype
 
-def write_response(bbox, label, conf,width, height):
-    response= dict()
-    response['Bounding Box Coordinates'] = bbox
-    response['Object Class'] = label
-    response['Confidence'] = conf
-    now = datetime.datetime.now()
-    timestamp = str(now.strftime("%Y-%m-%d_%H:%M:%S"))
-    response['Timestamp'] = timestamp
-    response['Image Metadata'] = {'width': width, 'height': height}
 
-    return response
-
-def detect_video2(video_filepath):
-    """
-    A function that performs Object Detection on an uploaded video.
-    It adds the Boundary Boxes as well as a label to the video as it streams.
+def detect_video(video_filepath):
+    """Performs Object Detection on an uploaded video. It adds the Boundary Boxes as well as a label to the video as it streams.
 
     Parameters:
         video_filepath (str): The path of the video uploaded by the user.
@@ -86,10 +79,12 @@ def detect_video2(video_filepath):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     size = (width, height)
     fourcc = cv2.VideoWriter_fourcc(*'MJPG') #Saves the output video to a directory.
-    out = cv2.VideoWriter(out_path, fourcc, 5, size)
+    fps = int(round(cap.get(1)))
+    print("\nThis is the fps", fps)
+    #out = cv2.VideoWriter(out_path, fourcc, 20.0, size)
 
     response =dict()
-    ls=[]
+    #ls=[]
     while cap.isOpened():
 
         ret, frame = cap.read() # Returns a tuple bool and frame, if ret is True then there's a video frame to read
@@ -101,8 +96,10 @@ def detect_video2(video_filepath):
         frame = cv2.flip(frame, 1) # Image may endup upsidedown, flip it
         bbox, label, conf = cv.detect_common_objects(frame, confidence=0.50, model="yolo.h5")
         output_frame = draw_bbox(frame, bbox, label, conf)
+        out = cv2.VideoWriter(out_path, fourcc, fps, (width, height))
+
         out.write(output_frame)  # Write the frame to the output files
-        ls.append(output_frame)
+        #ls.append(output_frame)
 
         print("Streaming...")
         cv2.imshow('frame', output_frame)
@@ -112,17 +109,16 @@ def detect_video2(video_filepath):
             # framsepress "q", 113ascii val for "q" to stop recording
             break
     #add_data(response)
-    write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response)
     cap.release() #Once the video stream is fully processed or the user prematurely exits the loop,
     out.release()   #You release the video-capture object (vid_capture) and close the window
     cv2.destroyAllWindows()
+    write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response)
+
 
     return video_filepath, response['response'],  filetype
 
 def add_data(response):
-    """
-    A function that adds data into MongoDB Atlas (NoSQL).
-    It takes a python dict and converts it into JSON format first.
+    """Adds data into MongoDB Atlas (NoSQL). It takes a python dict and converts it into JSON format first.
 
     Parameters:
      response (dict): A JSON-like object that has response data from our model
@@ -133,10 +129,7 @@ def add_data(response):
     db.db.collection.insert_one(rs)
 
 def allowed_file(filename):
-    """
-    A function that checks whether the uploaded filetype is allowed
-    using its extension.
-
+    """A function that checks whether the uploaded filetype is allowed using its extension.
     Supported file types: "jpg", "jpeg", "png", "webp", "mp4", "mov", "avi".
 
     Parameters:
@@ -149,6 +142,31 @@ def allowed_file(filename):
 
     if not file_extension:
         raise HTTPException(status_code=415, detail="Unsupported file provided.")
+
+def write_response(bbox, label, conf,width, height):
+    """ Adds model results to a dictionary to create a response object
+
+    Parameters:
+        bbox (list):
+        label (list of str):
+        conf (list of float):
+        width (float):
+        height  (float):
+
+    Returns:
+        response (dict): A dictionary containing response data from the model's results.
+
+    """
+    response= dict()
+    response['Bounding Box Coordinates'] = bbox
+    response['Object Class'] = label
+    response['Confidence'] = conf
+    now = datetime.datetime.now()
+    timestamp = str(now.strftime("%Y-%m-%d_%H:%M:%S"))
+    response['Timestamp'] = timestamp
+    response['Image Metadata'] = {'width': width, 'height': height}
+
+    return response
 
 def write_json(target_path, target_file, data):
 

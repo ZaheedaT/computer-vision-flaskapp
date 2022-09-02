@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+   <link rel="stylesheet" href='main.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-
+    <style>
+      .img-container {
+        text-align: center;
+      }
+    </style>
   </head>
   <body>
        <section>
@@ -19,21 +23,23 @@
                         <div id="success_alert" class="alert alert-success" role="alert" style="display:none;"></div>
 
 
+<div  class="img-container" >
     <h3>Object Detection Application</h3>
     <p>Detect object in video</p>
 
-    {% if user_image == "Video Object Detection Results:" %}
-     <title  Testing </title>
-        {% else %}
+   <!-- {% if user_image == "Video Object Detection Results:" %} -->
+       <!-- <title  class="img-container" >  Testing </title> -->
+       <!-- {% else %} -->
 
-     <video src="{{ user_image }}" controls="controls" width="500" height="600">  </video>
-        {% endif %}
+     <video src="{{ user_image }}" controls="controls"  class="img-container"  width="500" height="600">  </video>
+       <!-- {% endif %} -->
+
     <div>
         {{jsonfile}}
     </div>
-
+</div>
   <form action="/detect_object" target="_blank">
-       <button type="submit" formaction="/detect_object" style="width:200px"
+       <button type="submit" style="width:200px"
                class="btn btn-primary btn-block rounded-pill shadow"> Detect Object</button>
     </form>
 
