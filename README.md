@@ -1,9 +1,6 @@
-# Aizatron - Take Home Assignment
+#Computer Vision WebApp using Flask, OpenCV and MongoDB
 
-Build a Flask API that can be used to detect objects, display the ROIs along with class names from
-images provided through an endpoint.
-Your web application should allow a user to upload a file (you can use postman) and perform object
-detection to it. The model will be deployed in a Flask Framework environment in Python.
+The app allows for the user to upload an image or video, perform object detection on the uploaded file and output results to MongoDB.
 
 ### Project Structure
 ```shell
@@ -97,10 +94,10 @@ Ideally the data would not be stored in the Repo, by using an Argument Parser wh
 
 
 #### Mongodb Atlas
-Login to view database
+Follow instructions on https://medium.com/@zaheedatshankie/build-a-computer-vision-webapp-flask-opencv-and-mongodb-62a52d38738a
 
 ### Improvements 
-Improvements I could make are App/Unit tests, and better documentation under function definitions. It was my first time using a NoSQL framework and I've managed to use learn and implement MongoDB. I had a good try at using AWS DynamoDB , with a bit more learning and time I can make that aspect work. 
+Add App/Unit tests
 
 
 
