@@ -42,28 +42,28 @@ The app allows for the user to upload an image or video, perform object detectio
 
 
 #### App Installation
-1. Clone the repo:
+##### 1. Clone the repo:
 ```shell
 git clone [https://gitlab.com/zaheedatshankie1/computer-vision-flaskapp.git](https://github.com/ZaheedaT/computer-vision-flaskapp.git)
 ```
-3. Run the setup file which installs:
+##### 2. Run the setup file which installs:
 * python3-pip
 * creates a Venv Virtual Environment 
 
 ```sh 
 sh setup.sh
 ```
-4. Activate Virtual Environment
+##### 3. Activate Virtual Environment
 ```shell
 source flaskapp_env/bin/activate
 ```
-5. Install dependencies
+##### 4. Install dependencies
 
-Download yolo.h5
+<ins>Download yolo.h5</ins>
 
 `wget https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/yolo.h5`
 
-Tensorflow Installation 
+<ins>Tensorflow Installation</ins>
 
 `python3 -m pip install tensorflow`
 
