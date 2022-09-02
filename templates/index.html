@@ -1,8 +1,9 @@
 <html>
 
 <head>
-    <title>Landing Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -17,6 +18,8 @@
                     <h1 class="display-4">Image Detection App</h1>
                 </div>
             </div>
+
+
 
             <div class="row">
                 <div class="col-lg-8 col-md-10 col-sm-12 mx-auto">
@@ -44,10 +47,11 @@
 
 
                                 <button type="submit" class="btn btn-primary btn-block rounded-pill shadow"
-                                >Upload Datasets</button>
+                                    id="myFile">Upload Datasets</button>
                             </form>
                         </div>
                         <!-- End -->
+
                           <form action="/show_image" target="_blank" >
                             <input type="submit" value="Show Image" />
                         </form>
@@ -59,8 +63,6 @@
         </div>
     </section>
 
-    <script>
-    </script>
 </body>
 
 </html>

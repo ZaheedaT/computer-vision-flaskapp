@@ -1,43 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
- <link rel="stylesheet" href='main.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-
-  </head>
-    <script>
-      var jsonfile ={{jsonfile}};
-    </script>
     <style>
       .img-container {
         text-align: center;
       }
     </style>
+  </head>
   <body>
-     <section>
-        <div class="container p-8">
+       <section>
+        <div class="container p-5">
 
             <div class="row">
                 <div class="col-lg-8 col-md-10 col-sm-12 mx-auto">
-                    <div class="p-8 bg-white shadow rounded-lg">
+                    <div class="p-5 bg-white shadow rounded-lg">
 
                         <div id="success_alert" class="alert alert-success" role="alert" style="display:none;"></div>
 
+
 <div  class="img-container" >
-    <h3  >Object Detection Application</h3>
-    <p  >Detect object in image</p>
+    <h3>Object Detection Application</h3>
+    <p>Detect object in video</p>
 
-<img src="{{ user_image }}" alt="User Image"   width="500" height="600">
+   <!-- {% if user_image == "Video Object Detection Results:" %} -->
+       <!-- <title  class="img-container" >  Testing </title> -->
+       <!-- {% else %} -->
 
-  <!--  <div>
+     <video src="{{ user_image }}" controls="controls"  class="img-container"  width="500" height="600">  </video>
+       <!-- {% endif %} -->
+
+    <div>
         {{jsonfile}}
-    </div> -->
     </div>
-
+</div>
   <form action="/detect_object" target="_blank">
        <button type="submit" style="width:200px"
                class="btn btn-primary btn-block rounded-pill shadow"> Detect Object</button>
@@ -48,5 +49,4 @@
         </div>
     </section>
     </body>
-
 </html>

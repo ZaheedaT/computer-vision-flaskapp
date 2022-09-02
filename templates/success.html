@@ -1,0 +1,70 @@
+<html>
+
+<head>
+
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <section>
+        <div class="container p-5">
+            <div class="row mb-5 text-center text-white">
+                <div class="col-lg-10 mx-auto">
+                    <h1 class="display-4">Image Detection App</h1>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-lg-8 col-md-10 col-sm-12 mx-auto">
+                    <div class="p-5 bg-white shadow rounded-lg">
+
+                        <div id="success_alert" class="alert alert-success" role="alert" style="display:none;"></div>
+
+                        <!-- Uploading File -->
+                        <div id="upload_data">
+                            <img src="https://res.cloudinary.com/mhmd/image/upload/v1557366994/img_epm3iz.png" alt=""
+                                width="100" class="d-block mx-auto mb-4 rounded-pill">
+
+                            <h4 class="text-center mb-4 text-muted">
+                                Flask Object Detection App
+                            </h4>
+
+                            <div id="error_alert" class="alert alert-danger" role="alert" style="display:none;"></div>
+
+                            <form action="/" method="POST" enctype="multipart/form-data">
+                                <div class="custom-file mb-3">
+                                    <input type="file" class="custom-file-input" id="myFile" name="file-uploaded"
+                                        value="">
+                                    <label class="custom-file-label" for="file-uploaded">Upload Image or Video</label>
+                                </div>
+
+
+                                <button type="submit" class="btn btn-primary btn-block rounded-pill shadow"
+                                    id="myFile">Upload Datasets</button>
+                            </form>
+                        </div>
+                        <!-- End -->
+                        <p style="color:green;">File uploaded successfully</p>
+                          <form action="/show_image" target="_blank" >
+                            <input type="submit" value="Show Image" />
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>

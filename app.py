@@ -10,17 +10,17 @@ from utils import detect_and_draw_box, add_data, allowed_file
 
 
 
-app = Flask(__name__,  template_folder='templateFiles', static_folder='staticFiles')
+app = Flask(__name__,  template_folder='templates', static_folder='static')
 
 # Set Environment Variables
-UPLOAD_FOLDER = os.path.join('staticFiles', 'uploads')
-OUTPUT_FOLDER = os.path.join('staticFiles', 'output')
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+OUTPUT_FOLDER = os.path.join('static', 'output')
 #The config is actually a subclass of a dictionary and can be modified just like any dictionary
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'xyz'
 #app.config["MONGO_URI"] = "mongodb://localhost:27017/"
-os.path.dirname("../templateFiles")
+os.path.dirname("../templates")
 
 @app.route('/')
 def main():
@@ -29,7 +29,7 @@ def main():
 
 @app.route('/', methods=["POST"])
 def uploadFile():
-    if not os.path.exists(app.config['UPLOAD_FOLDER']): # Create Directory for the uploaded staticFiles
+    if not os.path.exists(app.config['UPLOAD_FOLDER']): # Create Directory for the uploaded static
         os.mkdir(app.config['UPLOAD_FOLDER'])
 
     if request.method == 'POST':
@@ -68,6 +68,6 @@ def detectObject():
 #     return jsonify(aws_controller.get_items())
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=True)
     
     
