@@ -7,7 +7,8 @@ import numpy as np
 import nest_asyncio
 from enum import Enum
 from utils import detect_and_draw_box, add_data, allowed_file
-
+import warnings
+warnings.filterwarnings("ignore")
 
 
 app = Flask(__name__,  template_folder='templates', static_folder='static')
