@@ -73,7 +73,7 @@ pip3 install -r requirements.txt
 
 #### Run the App
 ```sh
-flask run
+python3 app.py
 ```
 Exit the app using keyboard shortcuts:
 `ctrl + c`
