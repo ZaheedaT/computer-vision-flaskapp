@@ -1,6 +1,7 @@
-#Computer Vision WebApp using Flask, OpenCV and MongoDB
+# Computer Vision WebApp using Flask, OpenCV and MongoDB
 
 The app allows for the user to upload an image or video, perform object detection on the uploaded file and output results to MongoDB.
+How to build the WebApp detailed instructions - https://medium.com/@zaheedatshankie/build-a-computer-vision-webapp-flask-opencv-and-mongodb-62a52d38738a
 
 ### Project Structure
 ```shell
