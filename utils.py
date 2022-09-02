@@ -14,8 +14,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
 
-UPLOAD_FOLDER = os.path.join('staticFiles', 'uploads')
-OUTPUT_FOLDER = os.path.join('staticFiles', 'output')
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+OUTPUT_FOLDER = os.path.join('static', 'output')
 
 
 
@@ -41,19 +41,21 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
         img = cv2.imread(img_filepath) # Read the image into a numpy array
         bbox, label, conf = cv.detect_common_objects(img, confidence=confidence, model=model) # Perform the object detection
 
-        print("This is the bbox, label, conf", bbox, label, conf)
-        print(f"========================\nImage processed: {img_filepath}\n")  # Print current image's filename
+        print("\nThis is the bbox, label, conf", bbox, label, conf)
         for l, c in zip(label, conf):
             print(f"Detected object: {l} with confidence level of {c}\n") # Print detected objects with confidence level
 
         output_image = draw_bbox(img, bbox, label, conf) # Create a new image that includes the bounding boxes and label
+
         filename = img_filepath.split("/")[-1].split(".")[0]
         output_image_path = os.path.join(OUTPUT_FOLDER,  # Specified path using the image filename
                                          'output_image_{name}.jpg'.format(name=filename))
+        print(f"========================\nImage processed: {output_image_path}\n")  # Print current image's filename
+
         cv2.imwrite(output_image_path, output_image) # Save the image in the directory images_with_boxes
 
         response = write_response(bbox, label, conf, width = img.shape[1], height= img.shape[0])
-        write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response ) # Sanity Check to Save the response as a JSON locally
+        write_json(OUTPUT_FOLDER, "out_response_{name}.json".format(name=filename), data=response ) # Sanity Check to Save the response as a JSON locally
         #add_data(response) # Add the response JSON to mongodb table
         filetype = 'image'
         return output_image_path, response, filetype
@@ -112,7 +114,7 @@ def detect_video(video_filepath):
     cap.release() #Once the video stream is fully processed or the user prematurely exits the loop,
     out.release()   #You release the video-capture object (vid_capture) and close the window
     cv2.destroyAllWindows()
-    write_json("staticFiles/output/", "out_response_{name}.json".format(name=filename), data=response)
+    write_json(OUTPUT_FOLDER, "out_response_{name}.json".format(name=filename), data=response)
 
 
     return video_filepath, response['response'],  filetype
@@ -173,10 +175,3 @@ def write_json(target_path, target_file, data):
     with open(os.path.join(target_path, target_file), 'w') as f:
         json.dump(data, f)
 
-
-def to_dynamodb():
-    print("In the to_dynamodb function")
-    json_dict = json.loads("staticFiles/output/out_response.json")
-    table = dynamodb.Table('aizatron-app')
-    for item in json_dict:
-        table.put_item(Item=item)
