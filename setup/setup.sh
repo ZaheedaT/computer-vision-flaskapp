@@ -6,7 +6,8 @@
 sudo apt-get install python3-pip
 
 # create the virutual environment in the project root
-python3 -m venv aizatron_env
+python3 -m venv flaskapp_env
+
 # activate the virtual environment 
-source aizatron_env2/bin/activate
+source flaskapp_env/bin/activate
 
