@@ -44,7 +44,7 @@ The app allows for the user to upload an image or video, perform object detectio
 #### App Installation
 1. Clone the repo:
 ```shell
-git clone https://gitlab.com/zaheedatshankie1/computer-vision-flaskapp.git
+git clone [https://gitlab.com/zaheedatshankie1/computer-vision-flaskapp.git](https://github.com/ZaheedaT/computer-vision-flaskapp.git)
 ```
 3. Run the setup file which installs:
 * python3-pip
@@ -55,7 +55,7 @@ sh setup.sh
 ```
 4. Activate Virtual Environment
 ```shell
-source aizatron_env/bin/activate
+source flaskapp_env/bin/activate
 ```
 5. Install dependencies
 
