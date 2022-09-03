@@ -33,14 +33,14 @@ def uploadFile():
     if not os.path.exists(app.config['UPLOAD_FOLDER']): # Create Directory for the uploaded static
         os.mkdir(app.config['UPLOAD_FOLDER'])
 
-    if request.method == 'POST':
-        _img = request.files['file-uploaded']
-        filename = _img.filename
-        allowed_file(filename)
-        _img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        session['uploaded_img_file_path'] = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    #if request.method == 'POST':
+    _img = request.files['file-uploaded']
+    filename = _img.filename
+    allowed_file(filename)
+    _img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    session['uploaded_img_file_path'] = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-        return render_template('index.html', success = True)
+    return render_template('index.html', success = True)
 
 @app.route('/show_file')
 def displayImage():
