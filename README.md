@@ -59,6 +59,10 @@ source flaskapp_env/bin/activate
 ```
 ##### 4. Install dependencies
 
+```shell
+pip3 install -r requirements.txt
+```
+
 <ins>Download yolo.h5</ins>
 
 `wget https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/yolo.h5`
@@ -67,9 +71,6 @@ source flaskapp_env/bin/activate
 
 `python3 -m pip install tensorflow`
 
-```shell
-pip3 install -r requirements.txt
-```
 ##### 5. Set Basic Environment Variables
 ```
 export FLASK_APP= app.py
