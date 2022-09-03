@@ -59,9 +59,9 @@ def detectObject():
 
     if file_type == "image":
 
-        return render_template('show_file.html', jsonfile= response, user_image=output_image_path, is_image= True, is_show_button=False)
+        return render_template('show_file.html',  user_image=output_image_path, is_image= True, is_show_button=False)
     else:
-        return render_template('show_file.html', jsonfile= response, user_image= output_image_path, is_image= False, is_show_button=False)
+        return render_template('show_file.html',  user_image= output_image_path, is_image= False, is_show_button=False)
 
 # @app.route('/get-items')
 #

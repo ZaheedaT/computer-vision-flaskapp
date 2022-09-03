@@ -19,7 +19,7 @@ OUTPUT_FOLDER = os.path.join('static', 'output')
 
 
 
-def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
+def detect_and_draw_box( img_filepath: str, model="yolo.h5", confidence=0.2):
     """Detects common objects on an image and creates a new image with bounding boxes and a Class Label.
 
     Parameters:
@@ -35,7 +35,7 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
 
     if img_filepath.split(".")[-1] in ("mp4", "mov", "avi"):
         print("\nFile is a video")
-        return detect_video(img_filepath)
+        return detect_video(img_filepath, confidence, model)
     else:
         print("\nFile is an image")
         img = cv2.imread(img_filepath) # Read the image into a numpy array
@@ -61,7 +61,7 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
         return output_image_path, response, filetype
 
 
-def detect_video(video_filepath):
+def detect_video(video_filepath, confidence:float, model=str):
     """Performs Object Detection on an uploaded video. It adds the Boundary Boxes as well as a label to the video as it streams.
 
     Parameters:
@@ -73,7 +73,7 @@ def detect_video(video_filepath):
 
     print("\nPerforming Video Object Detection...")
 
-    filetype= 'video'
+
     filename = video_filepath.split("/")[-1].split(".")[0]
     out_path = os.path.join(OUTPUT_FOLDER, "video_result_{name}".format(name=filename))
     cap = cv2.VideoCapture(video_filepath) #Creates a video capture object, which would help stream or display the video.
@@ -83,7 +83,7 @@ def detect_video(video_filepath):
     fourcc = cv2.VideoWriter_fourcc(*'MJPG') #Saves the output video to a directory.
     fps = int(round(cap.get(5)))
     #print("\nThis is the fps", fps)
-    #out = cv2.VideoWriter(out_path, fourcc, 20.0, size)
+    #out = cv2.VideoWriter(out_path, fourcc, 10.0, size)
 
     response =dict()
     #ls=[]
@@ -95,13 +95,11 @@ def detect_video(video_filepath):
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
-        frame = cv2.flip(frame, 1) # Image may endup upsidedown, flip it
-        bbox, label, conf = cv.detect_common_objects(frame, confidence=0.50, model="yolo.h5")
+        frame = cv2.flip(frame, 1) # Image may end up upsidedown, flip it
+        bbox, label, conf = cv.detect_common_objects(frame, confidence=confidence, model=model)
         output_frame = draw_bbox(frame, bbox, label, conf)
-        out = cv2.VideoWriter(out_path, fourcc, 10, (width, height))
-
+        out = cv2.VideoWriter(out_path, fourcc, 10.0, (640, 480))
         out.write(output_frame)  # Write the frame to the output files
-        #ls.append(output_frame)
 
         print("Streaming...")
         cv2.imshow('frame', output_frame)
@@ -115,7 +113,7 @@ def detect_video(video_filepath):
     out.release()   #You release the video-capture object (vid_capture) and close the window
     cv2.destroyAllWindows()
     write_json(OUTPUT_FOLDER, "out_response_{name}.json".format(name=filename), data=response)
-
+    filetype = 'video'
 
     return video_filepath, response['response'],  filetype
 
