@@ -1,13 +1,11 @@
+cvlib==0.2.7
 Flask==2.1.0
-watchdog==2.1.9
 pandas==1.4.0
 numpy==1.23.2
 Jinja2==3.1.2
 opencv-python==4.6.0.66
-cvlib==0.2.7
 nest-asyncio==1.5.5
 imageai==2.1.6
-bson==0.5.10
-python-bsonjs==0.3.0
-flask-PyMongo==2.3.0
-dnspython==2.2.1
+Flask-PyMongo==2.3.0
+pymongo==4.2.0
+tensorflow==2.9.1
