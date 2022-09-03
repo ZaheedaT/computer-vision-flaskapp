@@ -12,19 +12,16 @@ The app allows for the user to upload an image or video, perform object detectio
 └── setup/
 │       ├── requirements.txt
 │       ├── setup.sh 
-└── staticFiles/
+└── static/
+│     └── css/
+│       ├── main.css
 │     ├── images # Images to use to test the App
 │     ├── videos # Videos to test the App
 │     ├── output # Output JSON and images stored here
 │     ├── uploads # User uploads saved here
 └── templateFiles /
 │    ├── index.html
-│    ├── show_image.html
-│    ├── show_video.htl
-│    ├── success.html# unit tests
-└── tests/
-│   ├── conftest.py  # Test cfg
-│   └── test_app.py  # unit tests
+│    ├── show_file.html
 └── README.md
 ```
 
