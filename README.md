@@ -70,6 +70,11 @@ source flaskapp_env/bin/activate
 ```shell
 pip3 install -r requirements.txt
 ```
+##### 5. Set Basic Environment Variables
+```
+export FLASK_APP= app.py
+export FLASK_ENV=development
+```
 
 #### Run the App
 ```sh
