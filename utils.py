@@ -81,8 +81,8 @@ def detect_video(video_filepath):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
     size = (width, height)
     fourcc = cv2.VideoWriter_fourcc(*'MJPG') #Saves the output video to a directory.
-    fps = int(round(cap.get(1)))
-    print("\nThis is the fps", fps)
+    fps = int(round(cap.get(5)))
+    #print("\nThis is the fps", fps)
     #out = cv2.VideoWriter(out_path, fourcc, 20.0, size)
 
     response =dict()
@@ -98,7 +98,7 @@ def detect_video(video_filepath):
         frame = cv2.flip(frame, 1) # Image may endup upsidedown, flip it
         bbox, label, conf = cv.detect_common_objects(frame, confidence=0.50, model="yolo.h5")
         output_frame = draw_bbox(frame, bbox, label, conf)
-        out = cv2.VideoWriter(out_path, fourcc, fps, (width, height))
+        out = cv2.VideoWriter(out_path, fourcc, 10, (width, height))
 
         out.write(output_frame)  # Write the frame to the output files
         #ls.append(output_frame)
