@@ -33,7 +33,6 @@ def uploadFile():
     if not os.path.exists(app.config['UPLOAD_FOLDER']): # Create Directory for the uploaded static
         os.mkdir(app.config['UPLOAD_FOLDER'])
 
-    #if request.method == 'POST':
     _img = request.files['file-uploaded']
     filename = _img.filename
     allowed_file(filename)
@@ -58,7 +57,6 @@ def detectObject():
     output_image_path, response, file_type = detect_and_draw_box(uploaded_image_path)
 
     if file_type == "image":
-
         return render_template('show_file.html',  user_image=output_image_path, is_image= True, is_show_button=False)
     else:
         return render_template('show_file.html',  user_image= output_image_path, is_image= False, is_show_button=False)
