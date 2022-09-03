@@ -76,7 +76,7 @@ export FLASK_APP= app.py
 export FLASK_ENV=development
 ```
 
-#### Run the App
+## Run the App
 ```sh
 python3 app.py
 ```
@@ -85,8 +85,7 @@ Exit the app using keyboard shortcuts:
 
 #### App Workflow
 The app allows the user to upload an image or a video.
-Upon uploading, the user will be taken to an endpoint to view the image/video, the user then clicks `detect object` , a new endpoint will appear with a picture of the Output as well as a display of the Response dictionary. 
-The results of the image/video uploaded will be saved in Mongodb Atlas database with the following fields:
+Upon uploading, the user will be taken to an endpoint to view the image/video, the user then clicks "detect object" , a new endpoint will appear with a picture of the Output. The results of the image/video uploaded will be saved locally in JSON format and in a Mongodb Atlas database with the following fields:
 
 Database fields:
 1. Timestamp
@@ -94,16 +93,13 @@ Database fields:
 3. Bounding box coordinates
 4. Confidence
 5. Image metadata 
-6. Any additional features 
-
-Ideally the data would not be stored in the Repo, by using an Argument Parser when running the app we can specify a link/path to the data. Or use DVC to pull different data versions. 
 
 
 #### Mongodb Atlas
 Follow instructions on https://medium.com/@zaheedatshankie/build-a-computer-vision-webapp-flask-opencv-and-mongodb-62a52d38738a
 
 ### Improvements 
-Add App/Unit tests
+Add App/Unit tests. Ideally the data would not be stored in the Repo, by using an Argument Parser when running the app we can specify a link/path to the data. Or use DVC to pull different data versions. 
 
 ** Credit for css designs: https://github.com/OmdenaAI/omdena-ghana-creditworthiness/tree/main/original/flask_app
 
