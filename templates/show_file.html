@@ -37,34 +37,31 @@
   <!--  <div>
         {{jsonfile}}
     </div> -->
-    </div>
+
 
 
 
  {% if is_image %}
-{% if is_show_button %}
-       <form action="/detect_object" target="_blank">
-      <img src="{{ user_image }}" alt="User Image"   width="500" >
-       <button type="submit" style="width:200px" class="btn btn-primary btn-block rounded-pill shadow"> Detect Object</button>
-                              </form>
-    {% else %}
-                          <form action="/detect_object" target="_blank">
-      <img src="{{ user_image }}" alt="User Image"   width="500" >
-                                 </form>
-      {% endif %}
+        {% if is_show_button %}
+           <form action="/detect_object" target="_blank">
+          <img src="{{ user_image }}" alt="User Image"   width="500" >
+           <button type="submit" style="width:200px" class="btn btn-primary btn-block rounded-pill shadow"> Detect Object</button>
+            </form>
+        {% else %}
+
+          <img src="{{ user_image }}" alt="User Image"   width="500" >
+
+        {% endif %}
 
  {% else %}
-                               <form action="/detect_object" target="_blank">
+    <form action="/detect_object" target="_blank">
      <video src="{{ user_image }}" controls="controls"  class="img-container"  width="500" >  </video>
        <button type="submit" style="width:200px" class="btn btn-primary btn-block rounded-pill shadow"> Detect Object</button>
-                              </form>
+        </form>
       {% endif %}
+     </div>
 
-
-
-
-
-                  </div>
+         </div>
         </div>
     </section>
     </body>

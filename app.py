@@ -40,15 +40,15 @@ def uploadFile():
         _img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         session['uploaded_img_file_path'] = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-        return render_template('success.html')
+        return render_template('index.html', success = True)
 
-@app.route('/show_image')
+@app.route('/show_file')
 def displayImage():
     img_file_path = session.get('uploaded_img_file_path', None)
     if img_file_path.split(".")[-1] in ("mp4", "mov"):
-        return render_template('show_image.html', user_image=img_file_path, is_image = False, is_show_button=True)
+        return render_template('show_file.html', user_image=img_file_path, is_image = False, is_show_button=True)
     else:
-        return render_template('show_image.html', user_image = img_file_path, is_image= True, is_show_button=True)
+        return render_template('show_file.html', user_image = img_file_path, is_image= True, is_show_button=True)
 
 
 @app.route('/detect_object')
@@ -59,9 +59,9 @@ def detectObject():
 
     if file_type == "image":
 
-        return render_template('show_image.html', jsonfile= response, user_image=output_image_path, is_image= True, is_show_button=False)
+        return render_template('show_file.html', jsonfile= response, user_image=output_image_path, is_image= True, is_show_button=False)
     else:
-        return render_template('show_image.html', jsonfile= response, user_image= output_image_path, is_image= False, is_show_button=False)
+        return render_template('show_file.html', jsonfile= response, user_image= output_image_path, is_image= False, is_show_button=False)
 
 # @app.route('/get-items')
 #

@@ -41,7 +41,7 @@ def detect_and_draw_box( img_filepath, model="yolo.h5", confidence=0.2):
         img = cv2.imread(img_filepath) # Read the image into a numpy array
         bbox, label, conf = cv.detect_common_objects(img, confidence=confidence, model=model) # Perform the object detection
 
-        print("\nThis is the bbox, label, conf", bbox, label, conf)
+
         for l, c in zip(label, conf):
             print(f"Detected object: {l} with confidence level of {c}\n") # Print detected objects with confidence level
 

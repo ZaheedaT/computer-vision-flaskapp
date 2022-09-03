@@ -52,9 +52,16 @@
                             </form>
                         </div>
                         <!-- End -->
+                        {% if success %}
+                               <p style="color:green;">File uploaded successfully</p>
+                          <form action="/show_file" target="_blank" >
+                            <input type="submit" value="Show File" />
+                              {% else %}
+                              <form action="/show_file" target="_blank" >
+                            <input type="submit" value="Show File" />
+                                  {% endif %}
 
-                          <form action="/show_image" target="_blank" >
-                            <input type="submit" value="Show Image" />
+
                         </form>
 
 
