@@ -28,19 +28,6 @@ The app allows for the user to upload an image or video, perform object detectio
 └── README.md
 ```
 
-
-
-#### Prerequisites
-* Flask==2.1.0
-* pandas==1.4.0
-* numpy==1.23.2
-* Jinja2==3.1.2
-* opencv-python==4.6.0.66
-* nest-asyncio==1.5.5
-* imageai==2.1.6
-* pymongo==4.2.0
-
-
 #### App Installation
 ##### 1. Clone the repo:
 ```shell
