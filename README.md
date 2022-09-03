@@ -100,5 +100,7 @@ Follow instructions on https://medium.com/@zaheedatshankie/build-a-computer-visi
 ### Improvements 
 Add App/Unit tests
 
+** Credit for css designs: https://github.com/OmdenaAI/omdena-ghana-creditworthiness/tree/main/original/flask_app
+
 
 
